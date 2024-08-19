@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Marry Me?</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            font-family: 'Roboto', sans-serif;
+        }
+        .modal-content {
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .modal-body {
+            text-align: center;
+        }
+        .modal-body img {
+            max-width: 100%;
+            border-radius: 15px;
+        }
+        .btn-custom {
+            margin-top: 20px;
+            width: 120px;
+            font-size: 18px;
+        }
+        .modal-footer {
+            justify-content: center;
+        }
+        .accordion-button {
+            font-size: 22px;
+            background-color: #e0f7fa;
+            color: #00796b;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .accordion-button:hover {
+            background-color: #b2ebf2;
+            color: #004d40;
+        }
+        .accordion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .todo-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+            background-color: #ffffff;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+        .todo-item:hover {
+            background-color: #f9f9f9;
+        }
+        .todo-item .done {
+            text-decoration: line-through;
+            color: #aaa;
+        }
+        .todo-item button {
+            margin-left: 10px;
+        }
+        .add-task-section {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .add-task-section input {
+            width: 70%;
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .add-task-section button {
+            width: 25%;
+            padding: 10px;
+            font-size: 18px;
+            background-color: #00796b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .add-task-section button:hover {
+            background-color: #004d40;
+        }
+        .todo-count {
+            font-size: 16px;
+            color: #00796b;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Modal -->
+<div class="modal fade" id="marryMeModal" tabindex="-1" aria-labelledby="marryMeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <img src="jake propose.png" alt="Will you marry me?">
+                <p class="mt-3">Will you marry me, Sam?</p>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success btn-custom" id="yesButton">Yes</button>
+                    <button type="button" class="btn btn-danger btn-custom" id="noButton">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- To-Do List Section -->
+<div class="container todo-list p-5" id="todoListSection" style="display: none; max-width: 900px; margin: auto; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);">
+    <h2 class="text-center mb-5" style="font-size: 2rem; font-weight: 600; color: #333;">To-Do Lists</h2>
+
+    <div class="accordion" id="todoAccordion">
+        <!-- Movies Section -->
+        <div class="accordion-item mb-4">
+            <h2 class="accordion-header d-flex align-items-center" id="headingMovies">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMovies" aria-expanded="true" aria-controls="collapseMovies" style="font-size: 1.25rem;">
+                    🎬 Movies
+                </button>
+                <span class="todo-count ms-auto me-3" id="moviesCount" 
+                style="font-size: 1rem; padding: 0.5rem 1.5rem; background: linear-gradient(45deg, #28a745, #85e085); color: white; border-radius: 50px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); font-weight: 600;">
+              0/0
+          </span>                <button class="btn btn-danger btn-sm" onclick="deleteCompletedItems('moviesList', 'moviesCount')" style="font-size: 1rem; padding: 0.5rem 1rem;">🗑 Delete Completed</button>
+            </h2>
+            <div id="collapseMovies" class="accordion-collapse collapse show" aria-labelledby="headingMovies" data-bs-parent="#todoAccordion">
+                <div class="accordion-body pt-3">
+                    <ul id="moviesList" class="list-group mb-4">
+                        <!-- To-Do items will be added here -->
+                    </ul>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="newMovieTask" placeholder="Add a new movie..." style="font-size: 1rem; padding: 0.75rem;">
+                        <button class="btn btn-primary" onclick="addTodoItem('moviesList', 'newMovieTask', 'moviesCount')" style="font-size: 1rem; padding: 0.75rem 1.5rem;">➕ Add Task</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Food Section -->
+        <div class="accordion-item mb-4">
+            <h2 class="accordion-header d-flex align-items-center" id="headingFood">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFood" aria-expanded="false" aria-controls="collapseFood" style="font-size: 1.25rem;">
+                    🍽️ Food
+                </button>
+                <span class="todo-count ms-auto me-3" id="foodCount" 
+                style="font-size: 1rem; padding: 0.5rem 1.5rem; background: linear-gradient(45deg, #28a745, #85e085); color: white; border-radius: 50px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); font-weight: 600;">
+              0/0
+          </span>
+                <button class="btn btn-danger btn-sm" onclick="deleteCompletedItems('foodList', 'foodCount')" style="font-size: 1rem; padding: 0.5rem 1rem;">🗑 Delete Completed</button>
+            </h2>
+            <div id="collapseFood" class="accordion-collapse collapse" aria-labelledby="headingFood" data-bs-parent="#todoAccordion">
+                <div class="accordion-body pt-3">
+                    <ul id="foodList" class="list-group mb-4">
+                        <!-- To-Do items will be added here -->
+                    </ul>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="newFoodTask" placeholder="Add a new food item..." style="font-size: 1rem; padding: 0.75rem;">
+                        <button class="btn btn-success" onclick="addTodoItem('foodList', 'newFoodTask', 'foodCount')" style="font-size: 1rem; padding: 0.75rem 1.5rem;">➕ Add Task</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Places Section -->
+        <div class="accordion-item">
+            <h2 class="accordion-header d-flex align-items-center" id="headingPlaces">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePlaces" aria-expanded="false" aria-controls="collapsePlaces" style="font-size: 1.25rem;">
+                    🌍 Places
+                </button>
+                <span class="todo-count ms-auto me-3" id="placesCount" 
+                style="font-size: 1rem; padding: 0.5rem 1.5rem; background: linear-gradient(45deg, #28a745, #85e085); color: white; border-radius: 50px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); font-weight: 600;">
+              0/0
+          </span>                <button class="btn btn-danger btn-sm" onclick="deleteCompletedItems('placesList', 'placesCount')" style="font-size: 1rem; padding: 0.5rem 1rem;">🗑 Delete Completed</button>
+            </h2>
+            <div id="collapsePlaces" class="accordion-collapse collapse" aria-labelledby="headingPlaces" data-bs-parent="#todoAccordion">
+                <div class="accordion-body pt-3">
+                    <ul id="placesList" class="list-group mb-4">
+                        <!-- To-Do items will be added here -->
+                    </ul>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="newPlaceTask" placeholder="Add a new place..." style="font-size: 1rem; padding: 0.75rem;">
+                        <button class="btn btn-info" onclick="addTodoItem('placesList', 'newPlaceTask', 'placesCount')" style="font-size: 1rem; padding: 0.75rem 1.5rem;">➕ Add Task</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Show the modal on page load
+    window.onload = function() {
+        var marryMeModal = new bootstrap.Modal(document.getElementById('marryMeModal'));
+        marryMeModal.show();
+    }
+
+    // Handle the "Yes" button click
+    document.getElementById('yesButton').onclick = function() {
+        document.querySelector('.modal-body img').src = "jake_smile.jpg";
+        document.querySelector('.modal-body p').textContent = 'Open Sesame';
+        document.getElementById('noButton').style.display = 'none';
+        document.getElementById('yesButton').textContent = 'Open';
+        document.getElementById('yesButton').onclick = function() {
+            var marryMeModal = bootstrap.Modal.getInstance(document.getElementById('marryMeModal'));
+            marryMeModal.hide();
+            document.getElementById('todoListSection').style.display = 'block';
+
+            // Add some sample to-do items
+            addTodoItem('moviesList', 'Watch Inception', 'moviesCount');
+            addTodoItem('moviesList', 'Watch The Matrix', 'moviesCount');
+            addTodoItem('foodList', 'Try Sushi', 'foodCount');
+            addTodoItem('foodList', 'Bake a Cake', 'foodCount');
+            addTodoItem('placesList', 'Visit Paris', 'placesCount');
+            addTodoItem('placesList', 'Explore Tokyo', 'placesCount');
+        }
+    }
+
+    // Handle the "No" button click
+    document.getElementById('noButton').onclick = function() {
+        document.querySelector('.modal-body img').src = "jake_with_gun.jpg";
+        document.querySelector('.modal-body p').textContent = "Don't make me do this, Accept your love for me ma'am";
+        document.getElementById('yesButton').onclick = function() {
+            document.querySelector('.modal-body img').src = "jake_smile.jpg";
+            document.querySelector('.modal-body p').textContent = 'Good Decision and so Open Sesame';
+            document.getElementById('noButton').style.display = 'none';
+            document.getElementById('yesButton').textContent = 'Open';
+            document.getElementById('yesButton').onclick = function() {
+                var marryMeModal = bootstrap.Modal.getInstance(document.getElementById('marryMeModal'));
+                marryMeModal.hide();
+                document.getElementById('todoListSection').style.display = 'block';
+
+                // Add some sample to-do items
+                addTodoItem('moviesList', 'Watch Inception', 'moviesCount');
+                addTodoItem('moviesList', 'Watch The Matrix', 'moviesCount');
+                addTodoItem('foodList', 'Try Sushi', 'foodCount');
+                addTodoItem('foodList', 'Bake a Cake', 'foodCount');
+                addTodoItem('placesList', 'Visit Paris', 'placesCount');
+                addTodoItem('placesList', 'Explore Tokyo', 'placesCount');
+            }
+            document.getElementById('noButton').onclick = function() {
+            document.querySelector('.modal-body img').src = "jake_crying.jpg";
+            document.querySelector('.modal-body p').textContent = 'Your loss! naa poren neyyyyyyy';
+            document.getElementById('yesButton').style.display = 'none';
+            document.getElementById('noButton').style.display = 'none';
+
+            setTimeout(function() {
+                window.close();
+            }, 4000); // Wait for 3 seconds and then close the browser tab
+        }
+        }
+    }
+
+    // Function to add a new to-do item
+    function addTodoItem(listId, taskInputId, countId) {
+        var taskInput = document.getElementById(taskInputId);
+        var task = taskInput.value.trim();
+        if (task !== '') {
+            var listItem = document.createElement('li');
+            listItem.className = 'todo-item list-group-item d-flex justify-content-between align-items-center';
+            listItem.innerHTML = '<span>' + task + '</span>' +
+                '<div><button class="btn btn-success btn-sm me-2" onclick="toggleDone(this)">Done</button>' +
+                '<button class="btn btn-danger btn-sm" onclick="deleteItem(this)">Delete</button></div>';
+            document.getElementById(listId).appendChild(listItem);
+            taskInput.value = '';
+
+            updateCount(listId, countId);
+            saveToLocalStorage(listId);
+        }
+    }
+
+    // Save the current state of the list to localStorage
+    function saveToLocalStorage(listId) {
+        var listItems = document.getElementById(listId).innerHTML;
+        localStorage.setItem(listId, listItems);
+    }
+
+    // Load the saved to-do items from localStorage
+    function loadFromLocalStorage(listId, countId) {
+        var savedItems = localStorage.getItem(listId);
+        if (savedItems) {
+            document.getElementById(listId).innerHTML = savedItems;
+            updateCount(listId, countId);
+        }
+    }
+
+    // On page load, retrieve saved to-do items
+    window.onload = function() {
+        var marryMeModal = new bootstrap.Modal(document.getElementById('marryMeModal'));
+        marryMeModal.show();
+
+        loadFromLocalStorage('moviesList', 'moviesCount');
+        loadFromLocalStorage('foodList', 'foodCount');
+        loadFromLocalStorage('placesList', 'placesCount');
+    }
+
+    // Other functions remain the same
+    function toggleDone(button) {
+        var taskText = button.parentElement.parentElement.querySelector('span');
+        taskText.classList.toggle('done');
+        var listId = button.parentElement.parentElement.parentElement.id;
+        var countId = button.parentElement.parentElement.parentElement.parentElement.querySelector('.todo-count').id;
+        updateCount(listId, countId);
+        saveToLocalStorage(listId);
+    }
+
+    function deleteItem(button) {
+        var listItem = button.parentElement.parentElement;
+        var listId = listItem.parentElement.id;
+        var countId = listItem.parentElement.parentElement.querySelector('.todo-count').id;
+        listItem.remove();
+        updateCount(listId, countId);
+        saveToLocalStorage(listId);
+    }
+
+    function deleteCompletedItems(listId, countId) {
+        var list = document.getElementById(listId);
+        var items = list.querySelectorAll('.todo-item');
+        items.forEach(function(item) {
+            if (item.querySelector('span').classList.contains('done')) {
+                item.remove();
+            }
+        });
+        updateCount(listId, countId);
+        saveToLocalStorage(listId);
+    }
+
+    function updateCount(listId, countId) {
+        var list = document.getElementById(listId);
+        var items = list.querySelectorAll('.todo-item');
+        var completedItems = list.querySelectorAll('.todo-item .done');
+        document.getElementById(countId).textContent = completedItems.length + '/' + items.length;
+    }</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
